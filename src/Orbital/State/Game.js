@@ -32,11 +32,19 @@ States.Game = {
 	suns: [],
 
 	create: function(game){
-		var x = 1;
+		var x = 2;
+		game.world.setBounds(
+			0,
+			0,
+			Options.width  * 2,
+			Options.height * 2
+		);
+		game.camera.x = ((Options.width  * 2) / 2) - (Options.width  / 2);
+		game.camera.y = ((Options.height * 2) / 2) - (Options.height / 2);
+
 		game.physics.startSystem(Phaser.Physics.P2JS);
-		game.physics.p2.gravity.y = 0;
 		game.physics.p2.restitution = 0.2;
-		game.physics.p2.setImpactEvents(true);
+		// game.physics.p2.setImpactEvents(true);
 
 		this.group = game.add.physicsGroup(
 			Phaser.Physics.P2JS,
@@ -44,37 +52,64 @@ States.Game = {
 			'planets'
 		);
 
+		dbg.log(
+			game.world.width  / 2,
+			game.world.height / 2
+		);
 		while (x) {
 			this.suns.push(
 				this.group.add(
 					new Sun(
 						game,
-						Options.width  / 2,
-						Options.height / 2
+						game.world.width  / 2,
+						game.world.height / 2
 					)
 				)
 			);
 			x--;
 		}
 
-		this.fired = true;
+		// Add lone orbiting planet
+		this.group.add(
+			new Planet(
+				game,
+				game.world.width  / 2 - 200,
+				game.world.height / 2 + (x * 2),
+				500
+			)
+		);
+
+		this.charged = 0;
 	},
 
 	update: function(game){
 		var planet;
 
-		if (this.fired && game.input.mousePointer.isUp) {
-			this.fired = false;
+		if (this.charged && game.input.mousePointer.isUp) {
+			planet = new Planet(
+				game,
+				game.input.mousePointer.worldX,
+				game.input.mousePointer.worldY,
+				this.charged
+			);
+			this.group.add(planet);
+			this.charged = 0;
 		}
 
-		if (!this.fired && game.input.mousePointer.isDown) {
-			this.fired = true;
-			planet = new Planet(game, game.input.mousePointer.x, game.input.mousePointer.y);
-			this.group.add(planet);
+		if (game.input.mousePointer.isDown) {
+			this.charged += 40;
+			if (this.charged > 1000) {
+				this.charged = 1000;
+			}
 		}
 
 		this.group.forEachAlive(this.setupForces, this);
 	},
+
+	// Example debug - REALLY slows down iPhone
+	// render: function(game){
+	//     game.debug.text('Charge: ' + this.charged, 10, 30);
+	// },
 
 	setupForces: function(planet){
 		var s, len;
@@ -86,9 +121,9 @@ States.Game = {
 	accellerateToObject: function(planet, sun){
 		var angle, force;
 
-		force = (1000 - Phaser.Point.distance(planet, sun));
+		force = (2000 - Phaser.Point.distance(planet, sun)) * 0.7;
 		if (force <= 0) {
-			force = 0.1;
+			force = 0;
 		}
 
 		angle = Math.atan2(sun.y - planet.y, sun.x - planet.x);

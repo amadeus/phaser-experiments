@@ -1,8 +1,8 @@
 define(function(){ 'use strict';
 
 var Options = {},
-	width   = 600,
-	height  = 480;
+	width   = window.innerWidth,
+	height  = window.innerHeight;
 
 Options.pixelRatio = window.devicePixelRatio || 1;
 // Options.pixelRatio = 1
