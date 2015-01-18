@@ -24,15 +24,11 @@ requirejs.config({
 });
 
 define([
-	'phaser',
-	'base',
+	'Orbital',
 	'dbg'
 ],
-function(
-	Phaser,
-	Base
-){ 'use strict';
+function(Orbital){ 'use strict';
 
-dbg.log('Main has loaded!');
+dbg.log('Orbital Instance', new Orbital());
 
 });
