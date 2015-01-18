@@ -1,0 +1,27 @@
+{
+    "strict"   : true,
+    "curly"    : true,
+    "undef"    : true,
+    "unused"   : "vars",
+    "forin"    : true,
+    "latedef"  : true,
+    "newcap"   : true,
+    "noarg"    : true,
+    "noempty"  : true,
+    "quotmark" : "single",
+    "trailing" : true,
+    "mootools" : true,
+    "jquery"   : true,
+    "browser"  : true,
+    "forin"    : false,
+    "onevar"   : true,
+    "noempty"  : true,
+    "globals"  : {
+        "require"   : true,
+        "requirejs" : true,
+        "define"    : true,
+        "PIXI"      : true,
+        "dbg"       : true,
+        "typ"       : true
+	}
+}
