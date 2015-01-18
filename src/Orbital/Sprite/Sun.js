@@ -21,8 +21,9 @@ var Sun = function(game, x, y){
 	this.scale.set(Options.spriteScale);
 	game.physics.p2.enable(this);
 	this.body.setCircle(Sun.size / 2);
-	this.body.static = true;
+	// this.body.static = true;
 	this.body.mass = 332946;
+	// this.body.mass = 33332946;
 };
 
 Sun.key = 'sun';

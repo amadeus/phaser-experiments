@@ -16,7 +16,8 @@ States.Init = {
 
 	init: function(){
 		this.setScale();
-		this.game.stage.backgroundColor = 0x032F51;
+		// this.game.stage.backgroundColor = 0x032F51;
+		this.game.stage.backgroundColor = 0x02223a;
 	},
 
 	setScale: function(){
