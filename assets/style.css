@@ -19,4 +19,6 @@ body {
 canvas {
 	display:block;
 	margin:0 auto;
+	width:600px  !important;
+	height:480px !important;
 }

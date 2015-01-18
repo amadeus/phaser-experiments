@@ -1,4 +1,5 @@
 define([
+	'Options',
 	'phaser',
 
 	'Orbital/States',
@@ -8,6 +9,7 @@ define([
 	'dbg'
 ],
 function(
+	Options,
 	Phaser,
 	States
 ){ 'use strict';
@@ -17,8 +19,8 @@ var Orbital = function(){
 
 	Phaser.Game.call(
 		this,
-		600 * this._scale,
-		480 * this._scale,
+		Options.width,
+		Options.height,
 		Phaser.WEBGL,
 		document.body,
 		null,
@@ -36,7 +38,6 @@ var Orbital = function(){
 
 Orbital.prototype = Object.create(Phaser.Game.prototype);
 Orbital.prototype.constructor = Orbital;
-Orbital.prototype._scale = window.devicePixelRatio;
 
 return Orbital;
 
