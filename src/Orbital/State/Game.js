@@ -29,9 +29,10 @@ States.Game = {
 		}
 	},
 
-	planets: [],
+	suns: [],
 
 	create: function(game){
+		var x = 1;
 		game.physics.startSystem(Phaser.Physics.P2JS);
 		game.physics.p2.gravity.y = 0;
 		game.physics.p2.restitution = 0.2;
@@ -43,46 +44,57 @@ States.Game = {
 			'planets'
 		);
 
-		this.sun = this.group.add(
-			new Sun(
-				game,
-				Options.width  / 2,
-				Options.height / 2
-			)
-		);
+		while (x) {
+			this.suns.push(
+				this.group.add(
+					new Sun(
+						game,
+						Options.width  / 2,
+						Options.height / 2
+					)
+				)
+			);
+			x--;
+		}
 
 		this.fired = true;
-		dbg.log('States.Game has loaded');
 	},
 
 	update: function(game){
 		var planet;
 
-		if (this.fired && game.input.mousePointer.isDown) {
+		if (this.fired && game.input.mousePointer.isUp) {
 			this.fired = false;
 		}
 
-		if (!this.fired && game.input.mousePointer.isUp) {
+		if (!this.fired && game.input.mousePointer.isDown) {
 			this.fired = true;
 			planet = new Planet(game, game.input.mousePointer.x, game.input.mousePointer.y);
 			this.group.add(planet);
 		}
 
-		this.group.forEachAlive(this.accellerateToObject, this);
+		this.group.forEachAlive(this.setupForces, this);
 	},
 
-	accellerateToObject: function(planet){
+	setupForces: function(planet){
+		var s, len;
+		for (s = 0, len = this.suns.length; s < len; s++) {
+			this.accellerateToObject(planet, this.suns[s]);
+		}
+	},
+
+	accellerateToObject: function(planet, sun){
 		var angle, force;
 
-		force = (1000 - Phaser.Point.distance(planet, this.sun));
+		force = (1000 - Phaser.Point.distance(planet, sun));
 		if (force <= 0) {
 			force = 0.1;
 		}
 
-		angle = Math.atan2(this.sun.y - planet.y, this.sun.x - planet.x);
-		planet.body.rotation = angle;
-		planet.body.force.x = Math.cos(angle) * force;
-		planet.body.force.y = Math.sin(angle) * force;
+		angle = Math.atan2(sun.y - planet.y, sun.x - planet.x);
+		// planet.body.rotation = angle;
+		planet.body.force.x += Math.cos(angle) * force;
+		planet.body.force.y += Math.sin(angle) * force;
 	}
 
 };
