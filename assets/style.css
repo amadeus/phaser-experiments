@@ -5,6 +5,8 @@ html, body {
 	margin:0;
 	padding:0;
 	background-color:#222;
+
+	font-family:Helvetica Neue, Helvetica, Arial, sans-serif;
 }
 
 html {
@@ -16,9 +18,13 @@ body {
 	vertical-align:middle;
 }
 
-canvas {
+body > canvas {
 	display:block;
 	margin:0 auto;
 	width:600px  !important;
 	height:480px !important;
+}
+
+.pdebug {
+	position:relative !important;
 }

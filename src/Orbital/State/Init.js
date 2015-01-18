@@ -2,12 +2,14 @@ define([
 	'Orbital/States',
 	'Options',
 	'phaser',
+	'debug',
 	'dbg'
 ],
 function(
 	States,
 	Options,
-	Phaser
+	Phaser,
+	Debug
 ){ 'use strict';
 
 States.Init = {
@@ -24,6 +26,7 @@ States.Init = {
 
 	create: function(game){
 		dbg.log('States.Init has loaded');
+		// game.add.plugin(Debug);
 		game.state.start('Game');
 	}
 

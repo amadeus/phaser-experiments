@@ -5,6 +5,7 @@ requirejs.config({
 
 	paths: {
 		phaser : 'libs/phaser',
+		debug  : 'libs/phaser-debug',
 		dbg    : 'libs/dbg',
 		base   : 'libs/base'
 	},
@@ -12,6 +13,10 @@ requirejs.config({
 	shim: {
 		'phaser': {
 			exports: 'Phaser'
+		},
+		'debug': {
+			deps: ['phaser'],
+			exports: 'Phaser.Plugin.Debug'
 		},
 		'dbg': {
 			exports: 'dbg'

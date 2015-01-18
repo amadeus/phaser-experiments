@@ -5,27 +5,27 @@ var copy, connect, clean;
 
 grunt.loadNpmTasks('grunt-contrib-copy');
 copy = {
-	requirejs: {
+	'requirejs': {
 		src: 'node_modules/requirejs/require.js',
 		dest: 'src/libs/require.js'
 	},
 
-	phaser: {
+	'phaser': {
 		src: 'node_modules/phaser/build/phaser.js',
 		dest: 'src/libs/phaser.js'
 	},
 
-	basejs: {
-		src: 'node_modules/basejs/Base.js',
-		dest: 'src/libs/base.js'
+	'phaser-debug': {
+		src: ['node_modules/phaser-debug/dist/phaser-debug.js'],
+		dest: 'src/libs/phaser-debug.js'
 	},
 
-	typjs: {
+	'typjs': {
 		src: 'node_modules/typ.js/typ-require.js',
 		dest: 'src/libs/typ.js'
 	},
 
-	dbg: {
+	'dbg': {
 		src: 'node_modules/dbg/dbg.js',
 		dest: 'src/libs/dbg.js'
 	}
@@ -60,7 +60,7 @@ grunt.registerTask('setup', [
 	'clean:libs',
 	'copy:requirejs',
 	'copy:phaser',
-	'copy:basejs',
+	'copy:phaser-debug',
 	'copy:typjs',
 	'copy:dbg'
 ]);

@@ -4,7 +4,8 @@ var Options = {},
 	width   = 600,
 	height  = 480;
 
-Options.pixelRatio  = window.devicePixelRatio || 1;
+Options.pixelRatio = window.devicePixelRatio || 1;
+// Options.pixelRatio = 1
 
 // Fix potential 3x or higher screens
 if (Options.pixelRatio > 2) {

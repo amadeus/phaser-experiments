@@ -12,9 +12,10 @@ var Planet = function(game, x, y){
 	Phaser.Sprite.call(this, game, x, y, Planet.Texture);
 	this.scale.set(Options.spriteScale);
 	game.physics.p2.enable(this);
+	this.body.setCircle(4);
 	this.body.mass = 1;
 	this.body.damping = 0.01;
-	this.body.velocity.y = -200;
+	this.body.velocity.y = -400;
 };
 
 Planet.Texture = 'planet';
