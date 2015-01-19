@@ -35,11 +35,6 @@ Planet.prototype._handleCollision = function(body1, body2){
 	}
 };
 
-Planet.prototype.deferDestroy = function(){
-	this.kill();
-	this.game.state.states[this.game.state.current].toDestroy.push(this);
-};
-
 Planet.prototype.accellerateToObject = function(suns){
 	var s, len, sun, angle, force, distanceFromCenter;
 
@@ -60,7 +55,7 @@ Planet.prototype.accellerateToObject = function(suns){
 	});
 
 	if (distanceFromCenter > 8000) {
-		this.deferDestroy();
+		this.deferDestroy(this);
 	}
 };
 

@@ -29,8 +29,6 @@ States.Game = {
 		'bg-stars-2' : 'assets/sprites/bg-stars-2.png'
 	},
 
-	toDestroy: [],
-
 	preload: function(game){
 		var key;
 
@@ -181,11 +179,11 @@ States.Game = {
 		this.handleInput(game);
 
 		// Destroy killed planets
-		if (this.toDestroy.length) {
-			for (p = 0, len < this.toDestroy.length; p < len; p++) {
-				this.toDestroy[p].destroy();
+		if (game.toDestroy.length) {
+			for (p = 0, len = game.toDestroy.length; p < len; p++) {
+				game.toDestroy[p].destroy();
 			}
-			this.toDestroy.length = 0;
+			game.toDestroy.length = 0;
 		}
 
 		for (p = 0, len = planets.length; p < len; p++) {
@@ -196,6 +194,15 @@ States.Game = {
 		}
 		planet = null;
 
+		this.updateParallax(game);
+
+		if (this.active) {
+			this.debug1 = 'force.x: ' + this.active.body.force.x;
+			this.debug2 = 'force.y: ' + this.active.body.force.y;
+		}
+	},
+
+	updateParallax: function(game){
 		this.stars1.tilePosition.x = -(game.camera.x * 0.2);
 		this.stars1.tilePosition.y = -(game.camera.y * 0.2);
 
@@ -204,11 +211,6 @@ States.Game = {
 
 		this.stars3.tilePosition.x = -(game.camera.x * 0.7);
 		this.stars3.tilePosition.y = -(game.camera.y * 0.7);
-
-		if (this.active) {
-			this.debug1 = 'force.x: ' + this.active.body.force.x;
-			this.debug2 = 'force.y: ' + this.active.body.force.y;
-		}
 	},
 
 	handleInput: function(game){
