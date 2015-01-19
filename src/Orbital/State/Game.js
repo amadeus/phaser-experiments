@@ -44,8 +44,8 @@ States.Game = {
 
 		this.setupPhysics(game);
 		this.setupGroups(game);
-		this.setupPathRendering(game);
 		this.setupInitialObjects(game);
+		this.setupPathRendering(game);
 
 		this.charged = 0;
 		window.durp = this.game;
@@ -148,8 +148,8 @@ States.Game = {
 		var blurX = game.add.filter('BlurX');
 		var blurY = game.add.filter('BlurY');
 
-		blurX.blur = 5;
-		blurY.blur = 5;
+		blurX.blur = 3;
+		blurY.blur = 3;
 
 		this.renderedPathsTexture = game.make.renderTexture(
 			Options.rtWidth,
