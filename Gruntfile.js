@@ -15,6 +15,13 @@ copy = {
 		dest: 'src/libs/phaser.js'
 	},
 
+	'phaser-filters': {
+		expand: true,
+		cwd: 'node_modules/phaser/filters',
+		src: '*.js',
+		dest: 'src/libs/filters/'
+	},
+
 	'phaser-debug': {
 		src: ['node_modules/phaser-debug/dist/phaser-debug.js'],
 		dest: 'src/libs/phaser-debug.js'
@@ -60,6 +67,7 @@ grunt.registerTask('setup', [
 	'clean:libs',
 	'copy:requirejs',
 	'copy:phaser',
+	'copy:phaser-filters',
 	'copy:phaser-debug',
 	'copy:typjs',
 	'copy:dbg'
