@@ -167,7 +167,7 @@ States.Game = {
 		this.renderedPaths.smoothed = true;
 		// this.renderedPaths.blendMode = Phaser.blendModes.SATURATION;
 		this.renderedPaths.filters = [blurX, blurY];
-		this.renderedPaths.alpha = 0.4;
+		this.renderedPaths.alpha = 0.3;
 
 		this.background.add(this.renderedPaths);
 	},
