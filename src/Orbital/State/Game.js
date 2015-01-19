@@ -2,6 +2,7 @@ define([
 	'Orbital/States',
 	'Orbital/Sprite/Sun',
 	'Orbital/Sprite/Planet',
+	'Orbital/Sprite/Camera',
 	'Options',
 	'phaser',
 	'filters/BlurX',
@@ -12,6 +13,7 @@ function(
 	States,
 	Sun,
 	Planet,
+	Camera,
 	Options,
 	Phaser
 ){ 'use strict';
@@ -20,8 +22,14 @@ States.Game = {
 
 	assets: {
 		'sun'    : 'assets/sprites/sun.png',
-		'planet' : 'assets/sprites/planet.png'
+		'planet' : 'assets/sprites/planet.png',
+
+		'bg-stars-0' : 'assets/sprites/bg-stars-0.png',
+		'bg-stars-1' : 'assets/sprites/bg-stars-1.png',
+		'bg-stars-2' : 'assets/sprites/bg-stars-2.png'
 	},
+
+	toDestroy: [],
 
 	preload: function(game){
 		var key;
@@ -34,22 +42,18 @@ States.Game = {
 	suns: [],
 
 	create: function(game){
-		game.world.setBounds(
-			0,
-			0,
-			Options.worldX,
-			Options.worldY
-		);
+		game.world.setBounds(0, 0, Options.worldX, Options.worldY);
 
-		game.physics.startSystem(Phaser.Physics.P2JS);
-		game.physics.p2.restitution = 0.2;
-		// Remove world physics bounds
-		game.physics.p2.setBounds(
-			null,  null,  null,  null,
-			false, false, false, false
-		);
-		game.physics.p2.onBeginContact.add(this._handleCollision, this);
+		this.setupPhysics(game);
+		this.setupGroups(game);
+		this.setupPathRendering(game);
+		this.setupInitialObjects(game);
 
+		this.charged = 0;
+		window.durp = this.game;
+	},
+
+	setupGroups: function(game){
 		this.background = game.add.group(undefined, 'background');
 
 		this.group = game.add.physicsGroup(
@@ -57,19 +61,79 @@ States.Game = {
 			undefined,
 			'planets'
 		);
+	},
 
+	setupPhysics: function(game){
+		game.physics.startSystem(Phaser.Physics.P2JS);
+		game.physics.p2.restitution = 0.2;
+		game.physics.p2.setImpactEvents(true);
+		// Remove world physics bounds
+		game.physics.p2.setBounds(
+			null,  null,  null,  null,
+			false, false, false, false
+		);
+		this.spaceCollision = game.physics.p2.createCollisionGroup();
+		this.miscCollision  = game.physics.p2.createCollisionGroup();
+		game.physics.p2.updateBoundsCollisionGroup();
+	},
+
+	setupInitialObjects: function(game){
+		var blurX = game.add.filter('BlurX');
+		var blurY = game.add.filter('BlurY');
+		blurX.blur = 2;
+		blurY.blur = 2;
+
+		this.stars1 = game.add.tileSprite(
+			0, 0,
+			Options.width,
+			Options.height,
+			'bg-stars-0',
+			undefined,
+			this.background
+		);
+		this.stars1.filters = [blurX, blurY];
+
+		this.stars2 = game.add.tileSprite(
+			0, 0,
+			Options.width,
+			Options.height,
+			'bg-stars-1',
+			undefined,
+			this.background
+		);
+
+		this.stars3 = game.add.tileSprite(
+			0, 0,
+			Options.width,
+			Options.height,
+			'bg-stars-2',
+			undefined,
+			this.background
+		);
+
+		this.stars1.fixedToCamera = true;
+		this.stars2.fixedToCamera = true;
+		this.stars3.fixedToCamera = true;
 
 		this.suns.push(
 			this.group.add(
 				new Sun(
 					game,
 					Options.worldWidth  / 2,
-					Options.worldHeight / 2
+					Options.worldHeight / 2,
+					this.spaceCollision
 				)
 			)
 		);
 
-		game.camera.focusOn(this.suns[0]);
+		var camera = new Camera(
+			game,
+			this.suns[0].x,
+			this.suns[0].y,
+			this.miscCollision
+		);
+		this.background.add(camera);
+		game.camera.follow(camera);
 
 		// Add lone orbiting planet
 		this.group.add(
@@ -77,44 +141,17 @@ States.Game = {
 				game,
 				this.suns[0].x - 200,
 				this.suns[0].y,
-				500
+				this.spaceCollision
 			)
 		);
-
-		this.setupPathRendering(game);
-
-		this.charged = 0;
-	},
-
-	_handleCollision: function(bodyA, bodyB){
-		var planet, sun;
-		if (bodyA.parent.sprite._isPlanet) {
-			planet = bodyA.parent.sprite;
-		}
-		if (bodyB.parent.sprite._isPlanet) {
-			planet = bodyB.parent.sprite;
-		}
-
-		if (bodyA.parent.sprite._isSun) {
-			sun = bodyA.parent.sprite;
-		}
-		if (bodyB.parent.sprite._isSun) {
-			sun = bodyB.parent.sprite;
-		}
-
-		if (!planet || !sun) {
-			return;
-		}
-
-		planet.destroy();
 	},
 
 	setupPathRendering: function(game){
 		var blurX = game.add.filter('BlurX');
 		var blurY = game.add.filter('BlurY');
 
-		blurX.blur = 3;
-		blurY.blur = 3;
+		blurX.blur = 5;
+		blurY.blur = 5;
 
 		this.renderedPathsTexture = game.make.renderTexture(
 			Options.rtWidth,
@@ -130,8 +167,9 @@ States.Game = {
 		);
 		this.renderedPaths.anchor.set(0.5);
 		this.renderedPaths.smoothed = true;
+		// this.renderedPaths.blendMode = Phaser.blendModes.SATURATION;
 		this.renderedPaths.filters = [blurX, blurY];
-		this.renderedPaths.alpha = 0.2;
+		this.renderedPaths.alpha = 0.4;
 
 		this.background.add(this.renderedPaths);
 	},
@@ -142,6 +180,14 @@ States.Game = {
 
 		this.handleInput(game);
 
+		// Destroy killed planets
+		if (this.toDestroy.length) {
+			for (p = 0, len < this.toDestroy.length; p < len; p++) {
+				this.toDestroy[p].destroy();
+			}
+			this.toDestroy.length = 0;
+		}
+
 		for (p = 0, len = planets.length; p < len; p++) {
 			planet = planets[p];
 			if (planet.accellerateToObject) {
@@ -149,6 +195,15 @@ States.Game = {
 			}
 		}
 		planet = null;
+
+		this.stars1.tilePosition.x = -(game.camera.x * 0.2);
+		this.stars1.tilePosition.y = -(game.camera.y * 0.2);
+
+		this.stars2.tilePosition.x = -(game.camera.x * 0.5);
+		this.stars2.tilePosition.y = -(game.camera.y * 0.5);
+
+		this.stars3.tilePosition.x = -(game.camera.x * 0.7);
+		this.stars3.tilePosition.y = -(game.camera.y * 0.7);
 
 		if (this.active) {
 			this.debug1 = 'force.x: ' + this.active.body.force.x;
@@ -164,9 +219,10 @@ States.Game = {
 				game,
 				game.input.mousePointer.worldX,
 				game.input.mousePointer.worldY,
-				this.charged
+				this.spaceCollision
 			);
 			this.group.add(planet);
+			// Debugging temp
 			// game.camera.follow(planet);
 			// this.active = planet;
 			this.charged = 0;

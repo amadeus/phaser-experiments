@@ -8,7 +8,7 @@ function(
 	Phaser
 ){ 'use strict';
 
-var Sun = function(game, x, y){
+var Sun = function(game, x, y, collisionGroup){
 	if (!x && x !== 0) {
 		x = game.rnd.realInRange((Options.worldWidth / 2) - 500, (Options.worldWidth / 2) + 500);
 	}
@@ -18,12 +18,14 @@ var Sun = function(game, x, y){
 	}
 
 	Phaser.Sprite.call(this, game, x, y, Sun.key);
+
 	this.scale.set(Options.spriteScale);
 	game.physics.p2.enable(this);
 	this.body.setCircle(Sun.size / 2);
 	this.body.mass = 332946;
 	this.body.damping = 1;
-	this.body._sprite = this;
+	this.body.setCollisionGroup(collisionGroup);
+	this.body.collides(collisionGroup);
 };
 
 Sun.key = 'sun';

@@ -16,7 +16,6 @@ States.Init = {
 
 	init: function(){
 		this.setScale();
-		// this.game.stage.backgroundColor = 0x032F51;
 		this.game.stage.backgroundColor = 0x02223a;
 	},
 
@@ -26,7 +25,6 @@ States.Init = {
 	},
 
 	create: function(game){
-		dbg.log('States.Init has loaded');
 		// game.add.plugin(Debug);
 		game.state.start('Game');
 	}

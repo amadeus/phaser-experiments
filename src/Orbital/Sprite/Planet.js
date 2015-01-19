@@ -8,7 +8,7 @@ function(
 	Phaser
 ){ 'use strict';
 
-var Planet = function(game, x, y, charge){
+var Planet = function(game, x, y, collisionGroup){
 	Phaser.Sprite.call(this, game, x, y, Planet.Texture);
 	this.scale.set(Options.spriteScale);
 	game.physics.p2.enable(this);
@@ -17,6 +17,8 @@ var Planet = function(game, x, y, charge){
 	this.body.damping = 0.00;
 	this.body.velocity.y = -(260);
 	this.smoothed = true;
+	this.body.setCollisionGroup(collisionGroup);
+	this.body.collides(collisionGroup, this._handleCollision, this);
 };
 
 Planet.Texture = 'planet';
@@ -26,16 +28,25 @@ Planet.prototype = Object.create(Phaser.Sprite.prototype);
 Planet.prototype.constructor = Planet;
 Planet.prototype._isPlanet = true;
 
+Planet.prototype._handleCollision = function(body1, body2){
+	// If we have collided with the sun, destroy ourselves
+	if (body2.sprite._isSun) {
+		this.deferDestroy();
+	}
+};
+
+Planet.prototype.deferDestroy = function(){
+	this.kill();
+	this.game.state.states[this.game.state.current].toDestroy.push(this);
+};
+
 Planet.prototype.accellerateToObject = function(suns){
 	var s, len, sun, angle, force, distanceFromCenter;
 
 	for (s = 0, len = suns.length; s < len; s++) {
 		sun = suns[s];
 		force = (1 / Math.pow(Phaser.Point.distance(this, sun), 2)) * sun.body.mass;
-		force *= 40;
-		if (force <= 0) {
-			force = 0;
-		}
+		force *= 60;
 
 		angle = Math.atan2(sun.y - this.y, sun.x - this.x);
 		this.body.rotation = angle + this.game.math.degToRad(90);
@@ -49,7 +60,7 @@ Planet.prototype.accellerateToObject = function(suns){
 	});
 
 	if (distanceFromCenter > 8000) {
-		this.destroy();
+		this.deferDestroy();
 	}
 };
 
