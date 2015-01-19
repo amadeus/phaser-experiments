@@ -4,6 +4,8 @@ define([
 	'Orbital/Sprite/Planet',
 	'Options',
 	'phaser',
+	'filters/BlurX',
+	'filters/BlurY',
 	'dbg'
 ],
 function(
@@ -43,6 +45,12 @@ States.Game = {
 
 		game.physics.startSystem(Phaser.Physics.P2JS);
 		game.physics.p2.restitution = 0.2;
+		// Remove world physics bounds
+		game.physics.p2.setBounds(
+			null,  null,  null,  null,
+			false, false, false, false
+		);
+		game.physics.p2.onBeginContact.add(this._handleCollision, this);
 		// game.physics.p2.setImpactEvents(true);
 
 		this.overlay = game.add.group(undefined, 'overlay');
@@ -56,9 +64,19 @@ States.Game = {
 		this.suns.push(
 			this.group.add(
 				new Sun(
-					game,
-					game.world.width  / 2,
-					game.world.height / 2
+					game //,
+					// game.world.width  / 2,
+					// game.world.height / 2
+				)
+			)
+		);
+
+		this.suns.push(
+			this.group.add(
+				new Sun(
+					game //,
+					// game.world.width  / 2,
+					// game.world.height / 2
 				)
 			)
 		);
@@ -73,21 +91,72 @@ States.Game = {
 			)
 		);
 
-		this.renderedPaths = game.add.renderTexture(
-			game.camera.width  * 2,
-			game.camera.height * 2
-		);
-
-		this.overlay.add(
-			game.make.sprite(0, 0, this.renderedPaths)
-		);
-
-		this.overlay.alpha = 0.2;
+		this.setupPathRendering(game);
 
 		this.charged = 0;
 	},
 
+	_handleCollision: function(bodyA, bodyB){
+		var planet, sun;
+		if (bodyA.parent.sprite._isPlanet) {
+			planet = bodyA.parent.sprite;
+		}
+		if (bodyB.parent.sprite._isPlanet) {
+			planet = bodyB.parent.sprite;
+		}
+
+		if (bodyA.parent.sprite._isSun) {
+			sun = bodyA.parent.sprite;
+		}
+		if (bodyB.parent.sprite._isSun) {
+			sun = bodyB.parent.sprite;
+		}
+
+		if (!planet || !sun) {
+			return;
+		}
+
+		planet.kill();
+	},
+
+	setupPathRendering: function(game){
+		var blurX = game.add.filter('BlurX');
+		var blurY = game.add.filter('BlurY');
+
+		blurX.blur = 3;
+		blurY.blur = 3;
+
+		this.renderedPathsTexture = game.make.renderTexture(
+			game.camera.width  * 2,
+			game.camera.height * 2
+		);
+
+		this.renderedPathsTexture._durp = true;
+
+		this.renderedPaths = game.make.sprite(0, 0, this.renderedPathsTexture);
+		this.renderedPaths.smoothed = true;
+		this.renderedPaths.filters = [blurX, blurY];
+
+		this.overlay.add(this.renderedPaths);
+		this.overlay.alpha = 0.2;
+	},
+
 	update: function(game){
+		var planets = this.group.children,
+			p, len, planet;
+
+		this.handleInput(game);
+
+		for (p = 0, len = planets.length; p < len; p++) {
+			planet = planets[p];
+			if (planet.accellerateToObject) {
+				planet.accellerateToObject(this.suns);
+			}
+		}
+		planet = null;
+	},
+
+	handleInput: function(game){
 		var planet;
 
 		if (this.charged && game.input.mousePointer.isUp) {
@@ -107,48 +176,18 @@ States.Game = {
 				this.charged = 1000;
 			}
 		}
-
-		this.group.forEachAlive(this.setupForces, this);
 	},
 
 	preRender: function(){
-		if (this.renderedPaths) {
-			this.renderedPaths.renderXY(this.group, 0, 0, false);
+		if (this.renderedPathsTexture) {
+			this.renderedPathsTexture.renderXY(this.group, 0, 0, false);
 		}
-	},
+	}
 
 	// Example debug - REALLY slows down iPhone
 	// render: function(game){
 	//     game.debug.text('Charge: ' + this.charged, 10, 30);
 	// },
-
-	dirtyCounter: 0,
-
-	setupForces: function(planet){
-		var s, len;
-
-		if (!planet._isPlanet) {
-			return;
-		}
-
-		for (s = 0, len = this.suns.length; s < len; s++) {
-			this.accellerateToObject(planet, this.suns[s]);
-		}
-	},
-
-	accellerateToObject: function(planet, sun){
-		var angle, force;
-
-		force = (1 / Math.pow(Phaser.Point.distance(planet, sun), 2)) * sun.body.mass;
-		force *= 40;
-		if (force <= 0) {
-			force = 0;
-		}
-
-		angle = Math.atan2(sun.y - planet.y, sun.x - planet.x);
-		planet.body.force.x += Math.cos(angle) * force;
-		planet.body.force.y += Math.sin(angle) * force;
-	}
 
 };
 

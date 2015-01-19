@@ -10,20 +10,20 @@ function(
 
 var Sun = function(game, x, y){
 	if (!x && x !== 0) {
-		x = game.rnd.realInRange(300, Options.width - 300);
+		x = game.rnd.realInRange(Options.width - 500, Options.width + 500);
 	}
 
 	if (!y && y !== 0) {
-		y = game.rnd.realInRange(300, Options.height - 300);
+		y = game.rnd.realInRange(Options.height - 500, Options.height + 500);
 	}
 
 	Phaser.Sprite.call(this, game, x, y, Sun.key);
 	this.scale.set(Options.spriteScale);
 	game.physics.p2.enable(this);
 	this.body.setCircle(Sun.size / 2);
-	// this.body.static = true;
 	this.body.mass = 332946;
-	// this.body.mass = 33332946;
+	this.body.damping = 1;
+	this.body._sprite = this;
 };
 
 Sun.key = 'sun';

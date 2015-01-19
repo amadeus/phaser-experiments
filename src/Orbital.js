@@ -25,7 +25,7 @@ var Orbital = function(){
 		document.body,
 		null,
 		false,
-		false,
+		true,
 		null
 	);
 
