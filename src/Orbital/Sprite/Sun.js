@@ -10,11 +10,11 @@ function(
 
 var Sun = function(game, x, y){
 	if (!x && x !== 0) {
-		x = game.rnd.realInRange(Options.width - 500, Options.width + 500);
+		x = game.rnd.realInRange((Options.worldWidth / 2) - 500, (Options.worldWidth / 2) + 500);
 	}
 
 	if (!y && y !== 0) {
-		y = game.rnd.realInRange(Options.height - 500, Options.height + 500);
+		y = game.rnd.realInRange((Options.worldHeight / 2) - 500, (Options.worldHeight / 2) + 500);
 	}
 
 	Phaser.Sprite.call(this, game, x, y, Sun.key);

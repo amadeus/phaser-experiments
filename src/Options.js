@@ -15,6 +15,12 @@ if (Options.pixelRatio > 2) {
 Options.width  = Options.pixelRatio * width;
 Options.height = Options.pixelRatio * height;
 
+Options.worldWidth  = Math.pow(2, 16);
+Options.worldHeight = Math.pow(2, 16);
+
+Options.rtWidth  = Math.pow(2, 12);
+Options.rtHeight = Math.pow(2, 12);
+
 // Used for scaling sprites
 Options.spriteScale = Options.pixelRatio / 2;
 

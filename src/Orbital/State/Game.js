@@ -37,11 +37,9 @@ States.Game = {
 		game.world.setBounds(
 			0,
 			0,
-			Options.width  * 2,
-			Options.height * 2
+			Options.worldX,
+			Options.worldY
 		);
-		game.camera.x = Options.width  - (Options.width  / 2);
-		game.camera.y = Options.height - (Options.height / 2);
 
 		game.physics.startSystem(Phaser.Physics.P2JS);
 		game.physics.p2.restitution = 0.2;
@@ -51,9 +49,8 @@ States.Game = {
 			false, false, false, false
 		);
 		game.physics.p2.onBeginContact.add(this._handleCollision, this);
-		// game.physics.p2.setImpactEvents(true);
 
-		this.overlay = game.add.group(undefined, 'overlay');
+		this.background = game.add.group(undefined, 'background');
 
 		this.group = game.add.physicsGroup(
 			Phaser.Physics.P2JS,
@@ -61,32 +58,25 @@ States.Game = {
 			'planets'
 		);
 
-		this.suns.push(
-			this.group.add(
-				new Sun(
-					game //,
-					// game.world.width  / 2,
-					// game.world.height / 2
-				)
-			)
-		);
 
 		this.suns.push(
 			this.group.add(
 				new Sun(
-					game //,
-					// game.world.width  / 2,
-					// game.world.height / 2
+					game,
+					Options.worldWidth  / 2,
+					Options.worldHeight / 2
 				)
 			)
 		);
+
+		game.camera.focusOn(this.suns[0]);
 
 		// Add lone orbiting planet
 		this.group.add(
 			new Planet(
 				game,
-				game.world.width  / 2 - 200,
-				game.world.height / 2,
+				this.suns[0].x - 200,
+				this.suns[0].y,
 				500
 			)
 		);
@@ -116,7 +106,7 @@ States.Game = {
 			return;
 		}
 
-		planet.kill();
+		planet.destroy();
 	},
 
 	setupPathRendering: function(game){
@@ -127,18 +117,23 @@ States.Game = {
 		blurY.blur = 3;
 
 		this.renderedPathsTexture = game.make.renderTexture(
-			game.camera.width  * 2,
-			game.camera.height * 2
+			Options.rtWidth,
+			Options.rtHeight
 		);
 
 		this.renderedPathsTexture._durp = true;
 
-		this.renderedPaths = game.make.sprite(0, 0, this.renderedPathsTexture);
+		this.renderedPaths = game.make.sprite(
+			Options.worldWidth  / 2,
+			Options.worldHeight / 2,
+			this.renderedPathsTexture
+		);
+		this.renderedPaths.anchor.set(0.5);
 		this.renderedPaths.smoothed = true;
 		this.renderedPaths.filters = [blurX, blurY];
+		this.renderedPaths.alpha = 0.2;
 
-		this.overlay.add(this.renderedPaths);
-		this.overlay.alpha = 0.2;
+		this.background.add(this.renderedPaths);
 	},
 
 	update: function(game){
@@ -154,6 +149,11 @@ States.Game = {
 			}
 		}
 		planet = null;
+
+		if (this.active) {
+			this.debug1 = 'force.x: ' + this.active.body.force.x;
+			this.debug2 = 'force.y: ' + this.active.body.force.y;
+		}
 	},
 
 	handleInput: function(game){
@@ -167,6 +167,8 @@ States.Game = {
 				this.charged
 			);
 			this.group.add(planet);
+			// game.camera.follow(planet);
+			// this.active = planet;
 			this.charged = 0;
 		}
 
@@ -180,14 +182,30 @@ States.Game = {
 
 	preRender: function(){
 		if (this.renderedPathsTexture) {
-			this.renderedPathsTexture.renderXY(this.group, 0, 0, false);
+			this.renderedPathsTexture.renderXY(
+				this.group,
+				(Options.worldWidth - Options.rtWidth)   / 2 * -1,
+				(Options.worldHeight - Options.rtHeight) / 2 * -1,
+				false
+			);
 		}
-	}
+	},
 
 	// Example debug - REALLY slows down iPhone
-	// render: function(game){
-	//     game.debug.text('Charge: ' + this.charged, 10, 30);
-	// },
+	render: function(game){
+		if (this.active) {
+			game.debug.text(
+				this.debug1,
+				20,
+				20
+			);
+			game.debug.text(
+				this.debug2,
+				20,
+				40
+			);
+		}
+	}
 
 };
 

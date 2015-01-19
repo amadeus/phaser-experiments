@@ -27,7 +27,7 @@ Planet.prototype.constructor = Planet;
 Planet.prototype._isPlanet = true;
 
 Planet.prototype.accellerateToObject = function(suns){
-	var s, len, sun, angle, force;
+	var s, len, sun, angle, force, distanceFromCenter;
 
 	for (s = 0, len = suns.length; s < len; s++) {
 		sun = suns[s];
@@ -41,6 +41,15 @@ Planet.prototype.accellerateToObject = function(suns){
 		this.body.rotation = angle + this.game.math.degToRad(90);
 		this.body.force.x += Math.cos(angle) * force;
 		this.body.force.y += Math.sin(angle) * force;
+	}
+
+	distanceFromCenter = Phaser.Point.distance(this, {
+		x: Options.worldWidth  / 2,
+		y: Options.worldHeight / 2
+	});
+
+	if (distanceFromCenter > 8000) {
+		this.destroy();
 	}
 };
 
