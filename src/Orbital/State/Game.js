@@ -47,7 +47,7 @@ States.Game = {
 	maxPower: 600,
 
 	create: function(game){
-		game.world.setBounds(0, 0, Options.worldX, Options.worldY);
+		game.world.setBounds(0, 0, Options.worldWidth, Options.worldHeight);
 
 		this.setupPhysics(game);
 		this.setupGroups(game);
@@ -278,7 +278,7 @@ States.Game = {
 		if (this.renderedPathsTexture) {
 			this.renderedPathsTexture.renderXY(
 				this.satellites,
-				(Options.worldWidth - Options.rtWidth)   / 2 * -1,
+				(Options.worldWidth  - Options.rtWidth)  / 2 * -1,
 				(Options.worldHeight - Options.rtHeight) / 2 * -1,
 				this.erase
 			);

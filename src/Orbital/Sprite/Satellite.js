@@ -17,7 +17,6 @@ var Satellite = function(game, x, y, velX, velY, collisionGroup){
 	this.body.damping = 0.00;
 	this.body.velocity.x = velX;
 	this.body.velocity.y = velY;
-	// this.body.velocity.y = -(260);
 	this.smoothed = true;
 	this.body.setCollisionGroup(collisionGroup);
 	this.body.collides(collisionGroup, this._handleCollision, this);
