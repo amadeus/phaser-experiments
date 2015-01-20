@@ -4,6 +4,7 @@ define([
 	'Orbital/Sprite/Satellite',
 	'Orbital/Sprite/Camera',
 	'Orbital/Launcher',
+	'Orbital/SunEmitter',
 	'Options',
 	'phaser',
 	'filters/BlurX',
@@ -16,6 +17,7 @@ function(
 	Satellite,
 	Camera,
 	Launcher,
+	SunEmitter,
 	Options,
 	Phaser
 ){ 'use strict';
@@ -127,25 +129,19 @@ States.Game = {
 		this.stars2.fixedToCamera = true;
 		this.stars3.fixedToCamera = true;
 
-		this.suns.push(
-			this.planets.add(
-				new Sun(
-					game,
-					Options.worldWidth  / 2,
-					Options.worldHeight / 2,
-					this.spaceCollision
-				)
-			)
+		this.addSun(
+			Options.worldWidth  / 2,
+			Options.worldHeight / 2
 		);
 
-		var camera = new Camera(
+		this.camera = new Camera(
 			game,
 			this.suns[0].x,
 			this.suns[0].y + 100,
 			this.miscCollision
 		);
-		this.overlay.add(camera);
-		game.camera.follow(camera);
+		this.overlay.add(this.camera);
+		game.camera.follow(this.camera);
 
 		// Add lone orbiting satellite
 		this.launchSatellite(
@@ -156,11 +152,18 @@ States.Game = {
 
 		this.launcher = new Launcher(
 			game,
-			camera.position,
+			this.camera.position,
 			this.overlay,
 			this._launchSatellite.bind(this)
 		);
 		this.overlay.add(this.launcher);
+
+		this.sunEmitter = new SunEmitter(
+			game,
+			this.camera.position,
+			this.addSun.bind(this)
+		);
+		this.overlay.add(this.sunEmitter);
 	},
 
 	_launchSatellite: function(x, y, angle, power){
@@ -184,6 +187,19 @@ States.Game = {
 				this.spaceCollision
 			)
 		);
+	},
+
+	addSun: function(x, y){
+		this.suns.push(
+			this.planets.add(
+				new Sun(
+					this.game,
+					x, y,
+					this.spaceCollision
+				)
+			)
+		);
+
 	},
 
 	setupPathRendering: function(game){
