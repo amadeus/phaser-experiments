@@ -13,11 +13,12 @@ var Launcher = function(game, target, renderGroup, callback){
 	this.callback = callback;
 	this._target   = target;
 
-	// this._target  = new Phaser.Point(0, 0);
 	this._current = new Phaser.Point(0, 0);
+	this.last = [];
 
 	this.graphics    = new Phaser.Graphics(game, 0, 0);
 	this.renderGroup = renderGroup;
+	this.spacebar = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
 };
 
 Launcher.prototype = {
@@ -35,6 +36,20 @@ Launcher.prototype = {
 			input.mousePointer.worldX,
 			input.mousePointer.worldY
 		);
+
+		if (!this.callOnce && this.spacebar.isDown && this.last.length) {
+			this.callOnce = true;
+			this.callback(
+				this._target.x,
+				this._target.y,
+				this.last[0],
+				this.last[1]
+			);
+		}
+
+		if (this.callOnce && this.spacebar.isUp) {
+			this.callOnce = false;
+		}
 
 		if (input.mousePointer.isDown && !this.added) {
 			this.renderGroup.add(this.graphics);
@@ -89,6 +104,9 @@ Launcher.prototype = {
 			Phaser.Point.distance(this.target, point),
 			this.maxDistance
 		) / this.maxDistance;
+
+		this.last[0] = angle;
+		this.last[1] = distance;
 
 		this.callback(this.target.x, this.target.y, angle, distance);
 	},

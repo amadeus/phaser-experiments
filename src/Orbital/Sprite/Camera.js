@@ -13,7 +13,7 @@ var Camera = function(game, x, y, collisionGroup){
 
 	game.physics.p2.enable(this);
 	this.body.mass = 1;
-	this.body.damping = 0.99;
+	this.body.damping = 0.9999;
 	this.body.setCollisionGroup(collisionGroup);
 	this.body.collides(collisionGroup);
 
