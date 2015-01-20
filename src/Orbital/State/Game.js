@@ -234,11 +234,6 @@ States.Game = {
 			this.debug2 = 'force.y: ' + this.active.body.force.y;
 		}
 
-		if (this.eraseKey.isDown) {
-			this.erase = true;
-		} else {
-			this.erase = false;
-		}
 	},
 
 	updateParallax: function(game){
@@ -253,6 +248,11 @@ States.Game = {
 	},
 
 	preRender: function(){
+		if (this.eraseKey && this.eraseKey.isDown) {
+			this.erase = true;
+		} else {
+			this.erase = false;
+		}
 		if (this.renderedPathsTexture) {
 			this.renderedPathsTexture.renderXY(
 				this.group,
