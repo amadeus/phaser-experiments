@@ -1,7 +1,7 @@
 define([
 	'Orbital/States',
 	'Orbital/Sprite/Sun',
-	'Orbital/Sprite/Planet',
+	'Orbital/Sprite/Satellite',
 	'Orbital/Sprite/Camera',
 	'Orbital/Launcher',
 	'Options',
@@ -13,7 +13,7 @@ define([
 function(
 	States,
 	Sun,
-	Planet,
+	Satellite,
 	Camera,
 	Launcher,
 	Options,
@@ -23,9 +23,9 @@ function(
 States.Game = {
 
 	assets: {
-		'reticle' : 'assets/sprites/reticle.png',
-		'sun'     : 'assets/sprites/sun.png',
-		'planet'  : 'assets/sprites/planet.png',
+		'reticle'   : 'assets/sprites/reticle.png',
+		'sun'       : 'assets/sprites/sun.png',
+		'satellite' : 'assets/sprites/satellite.png',
 
 		'bg-stars-0' : 'assets/sprites/bg-stars-0.png',
 		'bg-stars-1' : 'assets/sprites/bg-stars-1.png',
@@ -63,7 +63,7 @@ States.Game = {
 		this.group = game.add.physicsGroup(
 			Phaser.Physics.P2JS,
 			undefined,
-			'planets'
+			'satellites'
 		);
 
 		this.overlay = game.add.group(undefined, 'overlay');
@@ -141,8 +141,8 @@ States.Game = {
 		this.overlay.add(camera);
 		game.camera.follow(camera);
 
-		// Add lone orbiting planet
-		this.launchPlanet(
+		// Add lone orbiting satellite
+		this.launchSatellite(
 			this.suns[0].x - 200,
 			this.suns[0].y,
 			0, -260
@@ -152,16 +152,16 @@ States.Game = {
 			game,
 			camera.position,
 			this.overlay,
-			this._launchPlanet.bind(this)
+			this._launchSatellite.bind(this)
 		);
 		this.overlay.add(this.launcher);
 	},
 
-	_launchPlanet: function(x, y, angle, power){
+	_launchSatellite: function(x, y, angle, power){
 		if (power < 0.1) {
 			return;
 		}
-		this.launchPlanet(
+		this.launchSatellite(
 			x,
 			y,
 			Math.cos(angle) * (power * this.maxPower),
@@ -169,9 +169,9 @@ States.Game = {
 		);
 	},
 
-	launchPlanet: function(x, y, velX, velY){
+	launchSatellite: function(x, y, velX, velY){
 		this.group.add(
-			new Planet(
+			new Satellite(
 				this.game,
 				x, y,
 				velX, velY,
@@ -208,10 +208,10 @@ States.Game = {
 	},
 
 	update: function(game){
-		var planets = this.group.children,
-			p, len, planet;
+		var satellites = this.group.children,
+			p, len, satellite;
 
-		// Destroy killed planets
+		// Destroy killed satellite
 		if (game.toDestroy.length) {
 			for (p = 0, len = game.toDestroy.length; p < len; p++) {
 				game.toDestroy[p].destroy();
@@ -219,13 +219,13 @@ States.Game = {
 			game.toDestroy.length = 0;
 		}
 
-		for (p = 0, len = planets.length; p < len; p++) {
-			planet = planets[p];
-			if (planet.accellerateToObject) {
-				planet.accellerateToObject(this.suns);
+		for (p = 0, len = satellites.length; p < len; p++) {
+			satellite = satellites[p];
+			if (satellite.accellerateToObject) {
+				satellite.accellerateToObject(this.suns);
 			}
 		}
-		planet = null;
+		satellite = null;
 
 		this.updateParallax(game);
 

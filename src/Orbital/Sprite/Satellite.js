@@ -8,8 +8,8 @@ function(
 	Phaser
 ){ 'use strict';
 
-var Planet = function(game, x, y, velX, velY, collisionGroup){
-	Phaser.Sprite.call(this, game, x, y, Planet.Texture);
+var Satellite = function(game, x, y, velX, velY, collisionGroup){
+	Phaser.Sprite.call(this, game, x, y, Satellite.Texture);
 	this.scale.set(Options.spriteScale);
 	game.physics.p2.enable(this);
 	this.body.setCircle(4);
@@ -23,21 +23,21 @@ var Planet = function(game, x, y, velX, velY, collisionGroup){
 	this.body.collides(collisionGroup, this._handleCollision, this);
 };
 
-Planet.Texture = 'planet';
-Planet.size = 2 / Options.spriteScale;
+Satellite.Texture = 'satellite';
+Satellite.size = 2 / Options.spriteScale;
 
-Planet.prototype = Object.create(Phaser.Sprite.prototype);
-Planet.prototype.constructor = Planet;
-Planet.prototype._isPlanet = true;
+Satellite.prototype = Object.create(Phaser.Sprite.prototype);
+Satellite.prototype.constructor = Satellite;
+Satellite.prototype._isSatellite = true;
 
-Planet.prototype._handleCollision = function(body1, body2){
+Satellite.prototype._handleCollision = function(body1, body2){
 	// If we have collided with the sun, destroy ourselves
 	if (body2.sprite._isSun) {
 		this.deferDestroy();
 	}
 };
 
-Planet.prototype.accellerateToObject = function(suns){
+Satellite.prototype.accellerateToObject = function(suns){
 	var s, len, sun, angle, force, distanceFromCenter;
 
 	for (s = 0, len = suns.length; s < len; s++) {
@@ -61,6 +61,6 @@ Planet.prototype.accellerateToObject = function(suns){
 	}
 };
 
-return Planet;
+return Satellite;
 
 });
