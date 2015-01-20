@@ -60,7 +60,7 @@ States.Game = {
 	setupGroups: function(game){
 		this.background = game.add.group(undefined, 'background');
 
-		this.group = game.add.physicsGroup(
+		this.satellites = game.add.physicsGroup(
 			Phaser.Physics.P2JS,
 			undefined,
 			'satellites'
@@ -122,7 +122,7 @@ States.Game = {
 		this.stars3.fixedToCamera = true;
 
 		this.suns.push(
-			this.group.add(
+			this.satellites.add(
 				new Sun(
 					game,
 					Options.worldWidth  / 2,
@@ -170,7 +170,7 @@ States.Game = {
 	},
 
 	launchSatellite: function(x, y, velX, velY){
-		this.group.add(
+		this.satellites.add(
 			new Satellite(
 				this.game,
 				x, y,
@@ -208,7 +208,7 @@ States.Game = {
 	},
 
 	update: function(game){
-		var satellites = this.group.children,
+		var satellites = this.satellites.children,
 			p, len, satellite;
 
 		// Destroy killed satellite
@@ -255,7 +255,7 @@ States.Game = {
 		}
 		if (this.renderedPathsTexture) {
 			this.renderedPathsTexture.renderXY(
-				this.group,
+				this.satellites,
 				(Options.worldWidth - Options.rtWidth)   / 2 * -1,
 				(Options.worldHeight - Options.rtHeight) / 2 * -1,
 				this.erase
