@@ -7,29 +7,27 @@ function(
 	Phaser
 ){ 'use strict';
 
-var Launcher = function(game, renderGroup, callback){
+var Launcher = function(game, target, renderGroup, callback){
 	this.game     = game;
 	this.input    = game.input;
 	this.callback = callback;
+	this._target   = target;
 
-	this._target  = new Phaser.Point(0, 0);
+	// this._target  = new Phaser.Point(0, 0);
 	this._current = new Phaser.Point(0, 0);
 
 	this.graphics    = new Phaser.Graphics(game, 0, 0);
 	this.renderGroup = renderGroup;
-	dbg.log('Launcher created', this);
 };
 
 Launcher.prototype = {
 
-	maxDistance: 300,
+	maxDistance: 900,
 	visible: false,
-
 	_dirty: true,
-
 	added: false,
 
-	update: function(){
+	postUpdate: function(){
 		var input = this.input,
 			distance;
 
@@ -60,7 +58,6 @@ Launcher.prototype = {
 		// Set target location
 		if (this.added && !this.target && input.mousePointer.isDown) {
 			this.target = this._target;
-			this.target.copyFrom(this._current);
 		}
 
 		this.graphics.clear();
@@ -69,7 +66,7 @@ Launcher.prototype = {
 			this._current
 		);
 		this.graphics.lineStyle(
-			2,
+			4,
 			0xFFFFFF,
 			Math.min(1, distance / this.maxDistance)
 		);
@@ -101,7 +98,7 @@ Launcher.prototype = {
 	setStageReference: function(){},
 	updateTransform: function(){},
 	preUpdate: function(){},
-	postUpdate: function(){},
+	update: function(){},
 	_renderWebGL: function(){},
 	render: function(){}
 

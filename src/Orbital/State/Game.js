@@ -23,8 +23,9 @@ function(
 States.Game = {
 
 	assets: {
-		'sun'    : 'assets/sprites/sun.png',
-		'planet' : 'assets/sprites/planet.png',
+		'reticle' : 'assets/sprites/reticle.png',
+		'sun'     : 'assets/sprites/sun.png',
+		'planet'  : 'assets/sprites/planet.png',
 
 		'bg-stars-0' : 'assets/sprites/bg-stars-0.png',
 		'bg-stars-1' : 'assets/sprites/bg-stars-1.png',
@@ -53,6 +54,7 @@ States.Game = {
 
 		this.charged = 0;
 		window.durp = this.game;
+		window.durpState = this;
 	},
 
 	setupGroups: function(game){
@@ -133,10 +135,10 @@ States.Game = {
 		var camera = new Camera(
 			game,
 			this.suns[0].x,
-			this.suns[0].y,
+			this.suns[0].y + 100,
 			this.miscCollision
 		);
-		this.background.add(camera);
+		this.overlay.add(camera);
 		game.camera.follow(camera);
 
 		// Add lone orbiting planet
@@ -148,6 +150,7 @@ States.Game = {
 
 		this.launcher = new Launcher(
 			game,
+			camera.position,
 			this.overlay,
 			this._launchPlanet.bind(this)
 		);
@@ -155,6 +158,9 @@ States.Game = {
 	},
 
 	_launchPlanet: function(x, y, angle, power){
+		if (power < 0.1) {
+			return;
+		}
 		this.launchPlanet(
 			x,
 			y,
@@ -205,8 +211,6 @@ States.Game = {
 		var planets = this.group.children,
 			p, len, planet;
 
-		this.handleInput(game);
-
 		// Destroy killed planets
 		if (game.toDestroy.length) {
 			for (p = 0, len = game.toDestroy.length; p < len; p++) {
@@ -246,29 +250,6 @@ States.Game = {
 
 		this.stars3.tilePosition.x = -(game.camera.x * 0.7);
 		this.stars3.tilePosition.y = -(game.camera.y * 0.7);
-	},
-
-	handleInput: function(game){
-		// var planet;
-
-		// if (this.charged && game.input.mousePointer.isUp) {
-		//     planet = new Planet(
-		//         game,
-		//         game.input.mousePointer.worldX,
-		//         game.input.mousePointer.worldY,
-		//         this.spaceCollision
-		//     );
-		//     this.group.add(planet);
-		//     // this.active = planet;
-		//     this.charged = 0;
-		// }
-
-		// if (game.input.mousePointer.isDown) {
-		//     this.charged += 40;
-		//     if (this.charged > 1000) {
-		//         this.charged = 1000;
-		//     }
-		// }
 	},
 
 	preRender: function(){
