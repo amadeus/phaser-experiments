@@ -66,6 +66,12 @@ States.Game = {
 			'satellites'
 		);
 
+		this.planets = game.add.physicsGroup(
+			Phaser.Physics.P2JS,
+			undefined,
+			'planets'
+		);
+
 		this.overlay = game.add.group(undefined, 'overlay');
 	},
 
@@ -122,7 +128,7 @@ States.Game = {
 		this.stars3.fixedToCamera = true;
 
 		this.suns.push(
-			this.satellites.add(
+			this.planets.add(
 				new Sun(
 					game,
 					Options.worldWidth  / 2,
