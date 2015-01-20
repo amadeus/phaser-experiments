@@ -1,11 +1,11 @@
 define(function(){ 'use strict';
 
 var Options = {},
-	width   = 640,
-	height  = 480;
+	width   = window.innerWidth,
+	height  = window.innerHeight;
 
 Options.pixelRatio = window.devicePixelRatio || 1;
-// Options.pixelRatio = 1
+// Options.pixelRatio = 1;
 
 // Fix potential 3x or higher screens
 if (Options.pixelRatio > 2) {

@@ -39,6 +39,8 @@ States.Game = {
 
 	suns: [],
 
+	erase: false,
+
 	create: function(game){
 		game.world.setBounds(0, 0, Options.worldX, Options.worldY);
 
@@ -156,8 +158,6 @@ States.Game = {
 			Options.rtHeight
 		);
 
-		this.renderedPathsTexture._durp = true;
-
 		this.renderedPaths = game.make.sprite(
 			Options.worldWidth  / 2,
 			Options.worldHeight / 2,
@@ -166,10 +166,11 @@ States.Game = {
 		this.renderedPaths.anchor.set(0.5);
 		this.renderedPaths.smoothed = true;
 		// this.renderedPaths.blendMode = Phaser.blendModes.SATURATION;
-		this.renderedPaths.filters = [blurX, blurY];
-		this.renderedPaths.alpha = 0.3;
+		// this.renderedPaths.filters = [blurX, blurY];
+		this.renderedPaths.alpha = 0.1;
 
 		this.background.add(this.renderedPaths);
+		this.eraseKey = game.input.keyboard.addKey(Phaser.Keyboard.E);
 	},
 
 	update: function(game){
@@ -199,6 +200,12 @@ States.Game = {
 		if (this.active) {
 			this.debug1 = 'force.x: ' + this.active.body.force.x;
 			this.debug2 = 'force.y: ' + this.active.body.force.y;
+		}
+
+		if (this.eraseKey.isDown) {
+			this.erase = true;
+		} else {
+			this.erase = false;
 		}
 	},
 
@@ -244,7 +251,7 @@ States.Game = {
 				this.group,
 				(Options.worldWidth - Options.rtWidth)   / 2 * -1,
 				(Options.worldHeight - Options.rtHeight) / 2 * -1,
-				false
+				this.erase
 			);
 		}
 	},
