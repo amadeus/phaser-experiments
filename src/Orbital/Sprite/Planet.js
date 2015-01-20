@@ -8,14 +8,16 @@ function(
 	Phaser
 ){ 'use strict';
 
-var Planet = function(game, x, y, collisionGroup){
+var Planet = function(game, x, y, velX, velY, collisionGroup){
 	Phaser.Sprite.call(this, game, x, y, Planet.Texture);
 	this.scale.set(Options.spriteScale);
 	game.physics.p2.enable(this);
 	this.body.setCircle(4);
 	this.body.mass = 1;
 	this.body.damping = 0.00;
-	this.body.velocity.y = -(260);
+	this.body.velocity.x = velX;
+	this.body.velocity.y = velY;
+	// this.body.velocity.y = -(260);
 	this.smoothed = true;
 	this.body.setCollisionGroup(collisionGroup);
 	this.body.collides(collisionGroup, this._handleCollision, this);

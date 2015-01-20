@@ -3,6 +3,7 @@ define([
 	'Orbital/Sprite/Sun',
 	'Orbital/Sprite/Planet',
 	'Orbital/Sprite/Camera',
+	'Orbital/Launcher',
 	'Options',
 	'phaser',
 	'filters/BlurX',
@@ -14,6 +15,7 @@ function(
 	Sun,
 	Planet,
 	Camera,
+	Launcher,
 	Options,
 	Phaser
 ){ 'use strict';
@@ -38,8 +40,8 @@ States.Game = {
 	},
 
 	suns: [],
-
 	erase: false,
+	maxPower: 600,
 
 	create: function(game){
 		game.world.setBounds(0, 0, Options.worldX, Options.worldY);
@@ -61,6 +63,8 @@ States.Game = {
 			undefined,
 			'planets'
 		);
+
+		this.overlay = game.add.group(undefined, 'overlay');
 	},
 
 	setupPhysics: function(game){
@@ -136,11 +140,35 @@ States.Game = {
 		game.camera.follow(camera);
 
 		// Add lone orbiting planet
+		this.launchPlanet(
+			this.suns[0].x - 200,
+			this.suns[0].y,
+			0, -260
+		);
+
+		this.launcher = new Launcher(
+			game,
+			this.overlay,
+			this._launchPlanet.bind(this)
+		);
+		this.overlay.add(this.launcher);
+	},
+
+	_launchPlanet: function(x, y, angle, power){
+		this.launchPlanet(
+			x,
+			y,
+			Math.cos(angle) * (power * this.maxPower),
+			Math.sin(angle) * (power * this.maxPower)
+		);
+	},
+
+	launchPlanet: function(x, y, velX, velY){
 		this.group.add(
 			new Planet(
-				game,
-				this.suns[0].x - 200,
-				this.suns[0].y,
+				this.game,
+				x, y,
+				velX, velY,
 				this.spaceCollision
 			)
 		);
@@ -221,28 +249,26 @@ States.Game = {
 	},
 
 	handleInput: function(game){
-		var planet;
+		// var planet;
 
-		if (this.charged && game.input.mousePointer.isUp) {
-			planet = new Planet(
-				game,
-				game.input.mousePointer.worldX,
-				game.input.mousePointer.worldY,
-				this.spaceCollision
-			);
-			this.group.add(planet);
-			// Debugging temp
-			// game.camera.follow(planet);
-			// this.active = planet;
-			this.charged = 0;
-		}
+		// if (this.charged && game.input.mousePointer.isUp) {
+		//     planet = new Planet(
+		//         game,
+		//         game.input.mousePointer.worldX,
+		//         game.input.mousePointer.worldY,
+		//         this.spaceCollision
+		//     );
+		//     this.group.add(planet);
+		//     // this.active = planet;
+		//     this.charged = 0;
+		// }
 
-		if (game.input.mousePointer.isDown) {
-			this.charged += 40;
-			if (this.charged > 1000) {
-				this.charged = 1000;
-			}
-		}
+		// if (game.input.mousePointer.isDown) {
+		//     this.charged += 40;
+		//     if (this.charged > 1000) {
+		//         this.charged = 1000;
+		//     }
+		// }
 	},
 
 	preRender: function(){
