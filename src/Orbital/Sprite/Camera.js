@@ -16,6 +16,7 @@ var Camera = function(game, x, y, collisionGroup){
 	this.body.damping = 0.9999;
 	this.body.setCollisionGroup(collisionGroup);
 	this.body.collides(collisionGroup);
+	this.scale.set(Options.spriteScale);
 
 	this.cursors = game.input.keyboard.createCursorKeys();
 	this.cursors.w = game.input.keyboard.addKey(Phaser.Keyboard.W);
@@ -31,16 +32,16 @@ Camera.prototype.preUpdate = function(){
 	Phaser.Sprite.prototype.update.call(this);
 
 	if (this.cursors.down.isDown || this.cursors.s.isDown) {
-		this.body.force.y += 2000;
+		this.body.force.y += (2000 * Options.spriteScale);
 	}
 	if (this.cursors.up.isDown || this.cursors.w.isDown) {
-		this.body.force.y -= 2000;
+		this.body.force.y -= (2000 * Options.spriteScale);
 	}
 	if (this.cursors.left.isDown || this.cursors.a.isDown) {
-		this.body.force.x -= 2000;
+		this.body.force.x -= (2000 * Options.spriteScale);
 	}
 	if (this.cursors.right.isDown || this.cursors.d.isDown) {
-		this.body.force.x += 2000;
+		this.body.force.x += (2000 * Options.spriteScale);
 	}
 };
 

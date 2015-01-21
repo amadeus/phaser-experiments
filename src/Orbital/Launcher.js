@@ -23,7 +23,7 @@ var Launcher = function(game, target, renderGroup, callback){
 
 Launcher.prototype = {
 
-	maxDistance: 900,
+	maxDistance: 900 * Options.spriteScale,
 	visible: false,
 	_dirty: true,
 	added: false,
@@ -81,7 +81,7 @@ Launcher.prototype = {
 			this._current
 		);
 		this.graphics.lineStyle(
-			4,
+			4 * Options.spriteScale,
 			0xFFFFFF,
 			Math.min(1, distance / this.maxDistance)
 		);
